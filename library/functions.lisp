@@ -164,7 +164,10 @@
 
   (define-instance (Applicative (Arrow :a))
     (define (pure x) (fn (_) x))
-    (define (liftA2 f g h) (fn (x) (f (g x) (h x))))))
+    (define (liftA2 f g h) (fn (x) (f (g x) (h x)))))
+
+  (define-instance (Monad (Arrow :a))
+    (define (>>= f g) (fn (x) (g (f x) x)))))
 
 ;;;
 ;;; Bracket pattern
