@@ -21,6 +21,7 @@
    #:Applicative #:pure #:liftA2
    #:Monad #:>>=
    #:>>
+   #:join
    #:MonadFail #:fail
    #:Alternative #:alt #:empty
    #:Foldable #:fold #:foldr #:mconcat
@@ -212,6 +213,11 @@
   (declare >> (Monad :m => (:m :a) -> (:m :b) -> (:m :b)))
   (define (>> a b)
     (>>= a (fn (_) b)))
+
+  (declare join ((Monad :m) => :m (:m :a) -> :m :a))
+  (define (join m a)
+    "Equivalent to `(>>= m id)`."
+    (>>= m (fn (x) x)))
 
   (define-class (Monad :m => MonadFail :m)
     (fail (String -> :m :a)))
