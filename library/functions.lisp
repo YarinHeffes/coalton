@@ -160,7 +160,11 @@
   ;;
 
   (define-instance (Functor (Arrow :a))
-    (define map compose)))
+    (define map compose))
+
+  (define-instance (Applicative (Arrow :a))
+    (define (pure x) (fn (_) x))
+    (define (liftA2 f g h) (fn (x) (f (g x) (h x))))))
 
 ;;;
 ;;; Bracket pattern
