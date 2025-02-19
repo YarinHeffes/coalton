@@ -203,12 +203,13 @@
   (declare find ((:a -> Boolean) -> List :a -> Optional :a))
   (define (find f xs)
     "Returns the first element in a list matching the predicate function F."
-    (fold (fn (a b)
-            (match a
-              ((Some _) a)
-              (_
-               (if (f b) (Some b) None))))
-          None xs))
+    (let ((rec
+            (fn (xs)
+              (match xs
+                ((Nil) None)
+                ((Cons x xs)
+                 (if (f x) (Some x) (rec xs)))))))
+      (rec xs)))
 
   (declare filter ((:a -> Boolean) -> List :a -> List :a))
   (define (filter f xs)
@@ -243,17 +244,22 @@
   (declare nth (UFix -> List :t -> :t))
   (define (nth n l)
     "Like INDEX, but errors if the index is not found."
-    (from-some "There is no NTH" (index n l)))
+    (match l
+      ((Nil) (error "There is no NTH"))
+      ((Cons x xs)
+       (if (== 0 n)
+           x
+           (nth (- n 1) xs)))))
 
   (declare nth-cdr (Ufix -> List :a -> List :a))
   (define (nth-cdr n l)
     "Returns the nth-cdr of a list."
-    (cond ((null? l)
-	   Nil)
-	  ((math:zero? n)
-	   l)
-	  (True
-	   (nth-cdr (math:1- n) (cdr l)))))
+    (cond
+      ((== 0 n) l)
+      (True
+       (match l
+         ((Nil) l)
+         ((Cons _ xs) (nth-cdr (- n 1) xs))))))
   
   (declare elemIndex (Eq :a => :a -> List :a -> Optional UFix))
   (define (elemIndex x xs)
